@@ -1,0 +1,35 @@
+{
+  "name": "image2webp",
+  "version": "1.0.0",
+  "description": "Convert images (JPG, PNG, etc.) to WebP format",
+  "main": "dist/image2webp.min.js",
+  "module": "src/index.js",
+  "type": "module",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GHchenjingqi/image2webp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GHchenjingqi/image2webp/issues"
+  },
+  "homepage": "https://github.com/GHchenjingqi/image2webp#readme",
+  "scripts": {
+    "build": "rollup -c",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["image", "webp", "converter", "jpg", "png"],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.22.20",
+    "rollup": "^4.1.4"
+  }
+} 

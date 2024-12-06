@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to WebP 测试</title>
+    <style>
+        body {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .preview {
+            max-width: 100%;
+            margin: 10px 0;
+        }
+        .preview img {
+            max-width: 100%;
+            height: auto;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f5f5f5;
+        }
+        button {
+            padding: 8px 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image to WebP 转换</h1>
+
+    <!-- 文件上传测试 -->
+    <div class="container">
+        <h2>文件上传测试</h2>
+        <input type="file" id="fileInput" accept="image/*">
+        <div class="preview" id="filePreview"></div>
+        <button onclick="convertFile()">转换为WebP</button>
+        <div class="result" id="fileResult"></div>
+    </div>
+
+    <!-- URL测试 -->
+    <div class="container">
+        <h2>URL测试</h2>
+        <input type="text" id="urlInput" placeholder="输入图片URL" style="width: 100%; padding: 5px;">
+        <div class="preview" id="urlPreview"></div>
+        <button onclick="convertURL()">转换为WebP</button>
+        <div class="result" id="urlResult"></div>
+    </div>
+
+    <script src="dist/image2webp.min.js" type="text/javascript"></script>
+    <script>
+        // 创建转换器实例
+        const converter = new ImageToWebP({
+            quality: 0.8,
+            maxWidth: 1920,
+            maxHeight: 1080
+        });
+
+        // 文件预览
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('filePreview').innerHTML = `
+                        <h3>原图预览：</h3>
+                        <img src="${e.target.result}">
+                    `;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // URL预览
+        document.getElementById('urlInput').addEventListener('change', function(e) {
+            const url = e.target.value;
+            if (url) {
+                document.getElementById('urlPreview').innerHTML = `
+                    <h3>原图预览：</h3>
+                    <img src="${url}" crossorigin="anonymous">
+                `;
+            }
+        });
+
+        // 转换文件
+        async function convertFile() {
+            const fileInput = document.getElementById('fileInput');
+            const resultDiv = document.getElementById('fileResult');
+            
+            if (!fileInput.files.length) {
+                alert('请先选择文件！');
+                return;
+            }
+
+            try {
+                const file = fileInput.files[0];
+                const startTime = performance.now();
+                const webpBlob = await converter.convertFileToWebP(file);
+                const endTime = performance.now();
+
+                const webpUrl = URL.createObjectURL(webpBlob);
+                resultDiv.innerHTML = `
+                    <h3>转换结果：</h3>
+                    <p>转换用时：${(endTime - startTime).toFixed(2)}ms</p>
+                    <p>原始大小：${(file.size / 1024).toFixed(2)}KB</p>
+                    <p>转换后大小：${(webpBlob.size / 1024).toFixed(2)}KB</p>
+                    <img src="${webpUrl}">
+                    <p><a href="${webpUrl}" download="converted.webp">下载WebP图片</a></p>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">转换失败：${error.message}</p>`;
+            }
+        }
+
+        // 转换URL
+        async function convertURL() {
+            const urlInput = document.getElementById('urlInput');
+            const resultDiv = document.getElementById('urlResult');
+            
+            if (!urlInput.value) {
+                alert('请先输入图片URL！');
+                return;
+            }
+
+            try {
+                const url = urlInput.value;
+                const startTime = performance.now();
+                const webpBlob = await converter.convertURLToWebP(url);
+                const endTime = performance.now();
+
+                const webpUrl = URL.createObjectURL(webpBlob);
+                resultDiv.innerHTML = `
+                    <h3>转换结果：</h3>
+                    <p>转换用时：${(endTime - startTime).toFixed(2)}ms</p>
+                    <p>转换后大小：${(webpBlob.size / 1024).toFixed(2)}KB</p>
+                    <img src="${webpUrl}">
+                    <p><a href="${webpUrl}" download="converted.webp">下载WebP图片</a></p>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">转换失败：${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html> 
